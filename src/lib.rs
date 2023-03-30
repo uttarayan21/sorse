@@ -18,9 +18,13 @@ impl SorseHeader {
         }
     }
 
-    pub fn define<T: ToString>(&mut self, name: String, value: impl Into<Option<T>>) -> &mut Self {
+    pub fn define<T: ToString>(
+        &mut self,
+        name: impl Into<String>,
+        value: impl Into<Option<T>>,
+    ) -> &mut Self {
         self.defines
-            .insert(name, value.into().map(|x| x.to_string()));
+            .insert(name.into(), value.into().map(|x| x.to_string()));
         self
     }
 
