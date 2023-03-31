@@ -1,4 +1,4 @@
-use indexmap::IndexMap;
+use indexmap::{IndexMap, IndexSet};
 use std::io::Write;
 use std::path::{Path, PathBuf};
 pub struct SorseHeader {
@@ -6,6 +6,7 @@ pub struct SorseHeader {
     pub defines: IndexMap<String, Option<String>>,
     pub functions: IndexMap<String, String>,
     pub structs: IndexMap<String, String>,
+    pub blocks: IndexSet<String>,
 }
 
 impl SorseHeader {
@@ -15,6 +16,7 @@ impl SorseHeader {
             defines: IndexMap::new(),
             functions: IndexMap::new(),
             structs: IndexMap::new(),
+            blocks: IndexSet::new(),
         }
     }
 
@@ -53,6 +55,20 @@ impl SorseHeader {
                 writer.write_all(format!("#define {}\n", name).as_bytes())?;
             }
         }
+        for block in &self.blocks {
+            writer.write_all(block.as_bytes())?;
+        }
+        Ok(())
+    }
+}
+
+impl Write for SorseHeader {
+    fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
+        self.blocks.insert(String::from_utf8_lossy(buf).to_string());
+        Ok(buf.len())
+    }
+
+    fn flush(&mut self) -> std::io::Result<()> {
         Ok(())
     }
 }
