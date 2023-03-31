@@ -20,13 +20,9 @@ impl SorseHeader {
         }
     }
 
-    pub fn define<T: ToString>(
-        &mut self,
-        name: impl Into<String>,
-        value: impl Into<Option<T>>,
-    ) -> &mut Self {
+    pub fn define<'a, V: Into<Option<&'a str>>>(&mut self, var: &str, val: V) -> &mut Self {
         self.defines
-            .insert(name.into(), value.into().map(|x| x.to_string()));
+            .insert(var.into(), val.into().map(|x| x.to_string()));
         self
     }
 
